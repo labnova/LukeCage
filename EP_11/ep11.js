@@ -1,11 +1,14 @@
 var pianiTotali = ["Sotterranei", "PianoTerra", "PrimoPiano", "AtticoFinale"];
 
+var pianoAttualeGlobale;
+
 (function(){
 
  //dichiarare piano
   var Piano = function(idPiano) {
 
       this.idPiano = idPiano;
+      pianoAttualeGlobale = idPiano;
       this.returnPianoAttuale = function() {
         return idPiano;
       }
@@ -47,18 +50,44 @@ var pianiTotali = ["Sotterranei", "PianoTerra", "PrimoPiano", "AtticoFinale"];
       };
   } //fine object piano
 
+
+var potenzaNemici=0;
+
+  function getPotenzaNemico(nomePiano) {
+
+
+    var nemico = new Nemico(nomePiano)
+    var nemicoPiano = nemico.randomNemicoGenerator();
+    if(nemicoPiano == "zip") {
+      var zip = new Zip(nomePiano);
+      potenzaNemici = potenzaNemici + zip.potenza();
+      return nemico.nome + " potenza singolo: " +  zip.potenza();
+
+    } else {
+      var sugar = new Sugar(nomePiano);
+      potenzaNemici = potenzaNemici + sugar.potenza();
+      return nemico.nome + " potenza singolo: " + sugar.potenza();
+    }
+
+  }
+
+var pianoAttualeGlobale = new Piano();
+
   //CREARE NEMICI SULLA BASE DEI DATI INPUT
   var Nemico = function(numeroNemici) {
+    this.nomePiano = pianoAttualeGlobale;
     this.numeroNemici = numeroNemici;
     this.creaGruppo = function(){
       var arrayDaRitornare = [];
       var conteggio = 1;
+
       while (this.numeroNemici-1 >= 0) {
-        arrayDaRitornare.push("<p>n."+conteggio+":" + this.randomNemicoGenerator()+"</p><br/>");
+        arrayDaRitornare.push("<p>n."+conteggio+":" + getPotenzaNemico(this.nomePiano) +"</p><br/>");
         conteggio = conteggio+1;
+
         this.numeroNemici  = this.numeroNemici  - 1;
       }
-
+      console.log(this.nomePiano + arrayDaRitornare);
       return arrayDaRitornare;
     };
     this.randomNemicoGenerator = function() {
@@ -142,26 +171,21 @@ function creaDatiPiano(piano) {
 
     var nemicoPiano = new Nemico(numeroNemici);
     var creaGruppo = nemicoPiano.creaGruppo();
-    var potenzaNemici=0;
-    for (var i = 0; i < creaGruppo.length; i++) {
-      if(nemicoPiano.nome == "Zip") {
-        var zip = new Zip(nomePiano);
-        potenzaNemici = potenzaNemici + zip.potenza();
-      } else {
-        var sugar = new Sugar(nomePiano);
-        potenzaNemici = potenzaNemici + sugar.potenza();
-      }
+
 
 
     }
+    //inserire anche il nome dei nemici
+    $("#nomeNemici-"+nomePiano).append(creaGruppo);
 
+    //inserire anche la potenza complessiva
     $("#potenzaNemici-"+nomePiano).append(potenzaNemici);
 
-  }
+    potenzaNemici = 0;
+
+  } //fine function creaPiano
 
 
-
-} //fine function creaPiano
 
 
 var LukeCage = function(piano){
